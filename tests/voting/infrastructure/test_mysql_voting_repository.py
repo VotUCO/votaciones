@@ -28,8 +28,8 @@ class MySQLVotingRepositoryTest(TestCase):
                             end_date=self.__faker.future_datetime(),
                             voting_creator=self.__faker.uuid4(),
                             created_at=self.__faker.date_time(),
-                            options=self.__faker.get_words_list(),
-                            authorized_user=self.__faker.get_words_list()
+                            options=[self.__faker.word() for i in range(0,5)],
+                            authorized_user=[self.__faker.word() for i in range(0,5)]
                         )
         result_voting = self.__repository.save(voting=voting)
         self.assertEqual(voting, result_voting)
@@ -69,8 +69,8 @@ class MySQLVotingRepositoryTest(TestCase):
                         end_date=self.__faker.future_datetime(),
                         voting_creator=self.__faker.uuid4(),
                         created_at=self.__faker.date_time(),
-                        options=self.__faker.get_words_list(),
-                        authorized_user=self.__faker.get_words_list()
+                        options=[self.__faker.word() for i in range(0,5)],
+                        authorized_user=[self.__faker.word() for i in range(0,5)]
                         )
         self.__repository.save(voting=voting)
         voting = self.__voting_builder.build({"id": str(self.__id)})
@@ -88,8 +88,8 @@ class MySQLVotingRepositoryTest(TestCase):
                         end_date=self.__faker.future_datetime(),
                         voting_creator=self.__faker.uuid4(),
                         created_at=self.__faker.date_time(),
-                        options=self.__faker.get_words_list(),
-                        authorized_user=self.__faker.get_words_list()
+                        options=[self.__faker.word() for i in range(0,5)],
+                        authorized_user=[self.__faker.word() for i in range(0,5)]
                         )
         self.__repository.save(voting=voting)
         nombre_antiguo = voting.name
@@ -109,8 +109,8 @@ class MySQLVotingRepositoryTest(TestCase):
                         end_date=self.__faker.future_datetime(),
                         voting_creator=self.__faker.uuid4(),
                         created_at=self.__faker.date_time(),
-                        options=self.__faker.get_words_list(),
-                        authorized_user=self.__faker.get_words_list()
+                        options=[self.__faker.word() for i in range(0,5)],
+                        authorized_user=[self.__faker.word() for i in range(0,5)]
                         )
         self.__repository.delete(voting=voting)
         no_voting = self.__repository.find_voting_by_id(voting)

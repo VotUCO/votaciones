@@ -1,3 +1,4 @@
+import uuid
 from rest_framework.test import APITestCase, APIClient
 from datetime import datetime
 from src.users.models import User
@@ -7,8 +8,8 @@ from django.urls import reverse
 from src.voting.domain.value_objects.status_enum import StatusEnum
 from src.voting.domain.value_objects.voting_system_enum import VotingSystemEnum
 
-class CreateVotingControllerTest(APITestCase):
-    def test_create_voting_authenticate(self):
+class FindPublicVotingControllerTest(APITestCase):
+    def test_find_public_votings(self):
         faker = Faker()
         user = User.objects.create(id=faker.uuid4(),
                                    name=faker.word(),
@@ -24,19 +25,23 @@ class CreateVotingControllerTest(APITestCase):
         token = RefreshToken.for_user(user)
         data = {
             "id":faker.uuid4(),
-            "name": faker.word(),
-            "state":StatusEnum.DRAFT.value,
-            "winners":faker.random_int(min=0, max=4),
+            "name":faker.word(),
+            "state":StatusEnum.PUBLISHED.value,
+            "winners":faker.random_int(),
             "voting_system":(faker.random_element(VotingSystemEnum)).value,
-            "privacy":"True",
+            "privacy":"False",
             "start_date":datetime.strftime(faker.past_datetime(), "%d/%m/%Y, %H:%M:%S"),
             "end_date":datetime.strftime(faker.future_datetime(), "%d/%m/%Y, %H:%M:%S"),
             "created_at":datetime.strftime(faker.date_time(), "%d/%m/%Y, %H:%M:%S"),
             "options":str([faker.word() for i in range (0,5)]),
-            "authorized_user": str([faker.word() for i in range (0,5)])
+            "authorized_user": ""
         }
         client = APIClient()
         client.credentials(HTTP_AUTHORIZATION='Bearer '+str(token.access_token))
-        response = client.post(reverse("voting-creation-controler"), data=data, format='json')
-        assert response.status_code == 200
-
+        response=client.post(reverse("voting-creation-controler"), data=data, format='json')
+        response = client.get(reverse("get-public-votings"), data=data, format='json')
+        for item in response.data:
+            if item.get("id") == uuid.UUID(data.get("id")):
+                assert True
+                return 0
+        assert False

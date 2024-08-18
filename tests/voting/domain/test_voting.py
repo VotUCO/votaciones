@@ -17,8 +17,8 @@ class VotingTest(TestCase):
                                end_date=self.__faker.future_datetime(),
                                voting_creator=self.__faker.uuid4(),
                                created_at=self.__faker.date_time(),
-                               options=self.__faker.get_words_list(),
-                               authorized_user=self.__faker.get_words_list())
+                               options=[self.__faker.word() for i in range(0,5)],
+                               authorized_user=[self.__faker.word() for i in range(0,5)])
         
     def test_is_voting_active(self):
         active = self.__voting.is_voting_active()
