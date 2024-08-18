@@ -1,12 +1,11 @@
-version: "3.7"
 services:
   mongodb:
     image: mongo
     container_name: mongodb
     environment:
-      - MONGO_INITDB_DATABASE=quizdb
-      - MONGO_INITDB_ROOT_USERNAME=quiz-root
-      - MONGO_INITDB_ROOT_PASSWORD=quiz-secret
+      - MONGO_INITDB_DATABASE=voting
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
     volumes:
       - ./deploy/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./volumes/mongo/:/data/db
@@ -19,11 +18,14 @@ services:
       POSTGRES_USER: example
       POSTGRES_PASSWORD: example
       POSTGRES_DB: votaciones
+      TZ: "GMT-2"
+      PGTZ: "GMT-2"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./deploy/init-postgres.sql:/docker-entrypoint-initdb.d/init-postgres.sql:ro
     ports:
       - "5432:5432"
+
   web:
     build: ./deploy
     command: python manage.py runserver 0.0.0.0:8000
