@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import datetime
+import environ
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,13 +25,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-s8$yxeb6y39lj6#bhc+b!tw=il+k91&@3$(bb-#&4%k=_bx06x'
+SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if env('ENVIRONMENT') == 'DEBUG' else False
 
-ALLOWED_HOSTS = []
+VERSION = env('VERSION')
 
+ALLOWED_HOSTS = ['jesusescribano.net', 'localhost', '127.0.0.1']
+
+CSRF_COOKIE_SECURE = True
 
 # Application definition
 
@@ -39,9 +46,11 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'drf_yasg',
     'voting',
     'users',
+    'vote'
 ]
 
 MIDDLEWARE = [
@@ -91,15 +100,24 @@ WSGI_APPLICATION = 'votaciones.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': env('ENGINE_SQL_DB'),
+        'NAME': env('NAME_SQL_DB'),
+        'USER': env('USERNAME_SQL_DB', default=""),
+        'PASSWORD': env('PASSWORD_SQL_DB', default=""),
+        'HOST': env('HOST_SQL_NAME', default=""),
+        'PORT': env('PORT_SQL_NAME', default=""),
     },
     'mongo': {
-        'ENIGNE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'dbnon.sqlite3'
-    }
+        'ENGINE': env('ENGINE_NOSQL_DB'),
+        'NAME': env('NAME_NOSQL_DB'),
+        'USER': env('USER_NOSQL_DB', default=""),
+        'PASSWORD': env('PASSWORD_NOSQL_DB', default=""),
+        'HOST': env('HOST_NOSQL_DB', default=""),
+        'PORT': env('PORT_NOSQL_DB', default=""),
+    },
 }
 
+DATABASE_ROUTERS = ['votaciones.db_router.DatabasesRouter']
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
@@ -125,7 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = env('TIME_ZONE', default='UTC')
 
 USE_I18N = True
 
@@ -144,3 +162,5 @@ STATIC_ROOT = './static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
+
+SESSION_COOKIE_SECURE = True
