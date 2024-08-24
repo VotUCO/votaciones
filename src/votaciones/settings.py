@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import datetime
+import sys
 import environ
 import os
 
@@ -39,14 +40,14 @@ OAUTHLIB_INSECURE_TRANSPORT = "1"
 CORS_ALLOWED_ORIGINS = [
     "http://jesusescribano.net",
     "http://127.0.0.1:8081",
-    "http://localhost:8081",
+    "http://localhost:8080",
     "https://identidad.uco.es",
     "http://192.168.100.105:8080",
     "http://127.0.0.1:8000",
 ]
 
 ALLOWED_HOSTS = [
-    "http://jesusescribano.net",
+    "jesusescribano.net",
     "http://127.0.0.1:8081",
     "http://localhost:8081",
     "https://identidad.uco.es",
@@ -73,6 +74,8 @@ INSTALLED_APPS = [
     "drf_yasg",
     "src.voting",
     "src.users",
+    "src.vote",
+    "src.shared",
 ]
 
 MIDDLEWARE = [
@@ -86,18 +89,6 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
-
-SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "SCOPE": [
-            "profile",
-            "email",
-        ],
-        "AUTH_PARAMS": {
-            "access_type": "online",
-        },
-    }
-}
 
 ROOT_URLCONF = "src.votaciones.urls"
 
@@ -130,7 +121,7 @@ SIMPLE_JWT = {
 
 WSGI_APPLICATION = "src.votaciones.wsgi.application"
 
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # Database
@@ -138,17 +129,24 @@ SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 BACK_URL = env("BACK_URL")
 FRONT_REGISTER_URL = "http://localhost:8080/register"
+FRONT_URL = "http://localhost:8080/login/oauth"
 
 POSTGRES_HOST = env("POSTGRES_HOST")
 POSTGRES_PORT = int(env("POSTGRES_PORT"))
 POSTGRES_USER = env("POSTGRES_USER")
 POSTGRES_PASSWORD = env("POSTGRES_PASSWORD")
-POSTGRES_DATABASE = "votaciones"
+TEST = 'test' in sys.argv
+if TEST:
+    POSTGRES_DATABASE = "votaciones"
+    TEST_RUNNER = 'tests.test_runner.MigrationTestRunner'
+else:
+    POSTGRES_DATABASE = "votaciones"
 
 MONGO_HOST = env("MONGO_HOST")
 MONGO_PORT = int(env("MONGO_PORT"))
 MONGO_USER = env("MONGO_USER")
 MONGO_PASSWORD = env("MONGO_PASSWORD")
+MONGO_DATABASE = env("MONGO_DATABASE")
 
 GOOGLE_OAUTH2_CLIENT_ID = env("GOOGLE_OAUTH2_CLIENT_ID")
 GOOGLE_OAUTH2_CLIENT_SECRET = env("GOOGLE_OAUTH2_CLIENT_SECRET")
@@ -161,9 +159,18 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = env("EMAIL_BACKEND")
 
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://redis:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://redis:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+POSTGRES_DATABASE_TEST='votaciones_test'
 
 VOTING_TABLE = "voting"
 VOTING_COLLECTION = "public"
+VOTE_TABLE = "uservote"
 
 DATABASES = {
     "default": {
@@ -180,8 +187,6 @@ AUTHORIZED_USERS_TABLE = "authorizedusers"
 
 OPTIONS_TABLE = "options"
 USERS_TABLE = "users_user"
-
-DATABASE_ROUTERS = ["src.votaciones.db_router.DatabasesRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
