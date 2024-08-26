@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Email VotUCO</title>
+    <style>
+      img {
+        width: 250px;
+      }
+      .container {
+        display: block;
+        margin: 20px;
+      }
+      .containterimage {
+        display: flex;
+        justify-content: center;
+      }
+      p {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        margin-bottom: 30px;
+      }
+      footer {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="containterimage">
+          <img
+            alt="Logo VotUCO"
+            src="http://jesusescribano.net/logovotuco.png"
+            style="justify-content: center"
+          />
+        </div>
+        <p>
+          ¡Bienvenid@ a VotUCO {{ nombre }}! A partir de ahora puedes acceder al
+          dashboard principal de la aplicación
+          <a href="https://jesusescribano.net/votuco">desde aquí</a>
+        </p>
+        <p>¡Muchas gracias por el registro!</p>
+      </div>
+    </main>
+    <footer>Este email es para: {{ email }}</footer>
+  </body>
+</html>
