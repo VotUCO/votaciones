@@ -174,3 +174,8 @@ cython_debug/
 # End of https://www.toptal.com/developers/gitignore/api/django
 migrations/
 db.sqlite3
+
+cert.pem
+client_secret.json
+key.pem
+volumes/
