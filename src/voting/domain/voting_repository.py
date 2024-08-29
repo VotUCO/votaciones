@@ -28,6 +28,10 @@ class VotingRepository(ABC):
         pass
 
     @abstractmethod
+    def find_voting_by_user_draft(self, user: User) -> List[Voting]:
+        pass
+
+    @abstractmethod
     def find_voting_by_id(self, voting: Voting) -> Voting:
         pass
 
@@ -41,4 +45,8 @@ class VotingRepository(ABC):
 
     @abstractmethod
     def find_options_by_voting_id(self, voting: Voting) -> Dict:
+        pass
+
+    @abstractmethod
+    def publish_vote(self, voting: Voting) -> None:
         pass
