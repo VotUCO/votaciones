@@ -60,3 +60,6 @@ class MySQLVoteRepository(VoteRepository):
             return self.__vote_builder.build_from_record(vote)
         else:
             return None 
+        
+    def get_all_votes(self, voting: Voting) -> None:
+        pass
