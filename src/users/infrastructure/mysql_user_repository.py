@@ -42,11 +42,10 @@ class MySQLUserRepository(UserRepository):
 
     def get_user_by_id(self, user: User) -> Any:
         user = self.__client.one(
-            f"SELECT id, name, surname, email, birth_date, gender FROM {VOTING_COLLECTION}.{USERS_TABLE} WHERE id = {user.id}"
+            f"SELECT id, name, surname, email, birth_date, gender FROM {VOTING_COLLECTION}.{USERS_TABLE} WHERE id = '{user.id}'"
         )
         if user:
-            user = json.dumps(user)
-            return self.__user_builder.build(user)
+            return self.__user_builder.build_from_record_vote(user)
         else:
             return None
 

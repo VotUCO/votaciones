@@ -53,6 +53,18 @@ class UserBuilder(Builder):
             birthDate=record.birth_date,
             rol=RolEnum(record.rol),
         )
+    
+    def build_from_record_vote(self, record: Any) -> Any:
+        return User(
+            id=record.id,
+            name=record.name,
+            surname=record.surname,
+            email=record.email,
+            password=None,
+            gender=GenderEnum(record.gender),
+            birthDate=record.birth_date,
+            rol=None,
+        )
 
     def build_from_record_email_pass(self, record: Any) -> Any:
         return User(
