@@ -1,14 +1,20 @@
 import itertools
 
 def schulze_method(votes, candidates):
+    blancos = 0
+    validos = 0
     # Paso 1: Contar preferencias directas
     preferences = { (i, j): 0 for i in candidates for j in candidates if i != j }
     for vote in votes:
-        for i, j in itertools.combinations(vote, 2):
-            if vote.index(i) < vote.index(j):
-                preferences[(i, j)] += 1
-            else:
-                preferences[(j, i)] += 1
+        if vote:
+            validos = validos +1
+            for i, j in itertools.combinations(vote, 2):
+                if vote.index(i) < vote.index(j):
+                    preferences[(i, j)] += 1
+                else:
+                    preferences[(j, i)] += 1
+        else:
+            blancos = blancos +1
 
     # Paso 2: Determinar la fuerza de la ruta más fuerte
     strength = { (i, j): 0 for i in candidates for j in candidates if i != j }
@@ -26,4 +32,4 @@ def schulze_method(votes, candidates):
         if strength[(i, j)] > strength[(j, i)]:
             ranking[i] += 1
 
-    return sorted(ranking.items(), key=lambda item: item[1], reverse=True)
+    return sorted(ranking.items(), key=lambda item: item[1], reverse=True), validos, blancos
