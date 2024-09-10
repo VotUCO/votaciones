@@ -3,13 +3,35 @@ from weasyprint import HTML
 from src.voting.application.voting_finder import VotingFinder
 from src.voting.infrastructure.mysql_voting_repository import MySQLVotingRepository
 from src.voting.infrastructure.builders.voting_builder import VotingBuilder
-from django.template import Template, Context
+from weasyprint import HTML
+from jinja2 import Template
+
+from src.vote.application.vote_finder import VoteFinder
+from src.vote.infrastructure.mongo_vote_repository import MongoVoteRepository
+from src.voting_systems.scoring import scoring_with_direct_points
+from src.voting_systems.mayoritario import mayority_with_direct_points
+from src.voting_systems.schuzle import schulze_method
 
 def generate_votacion_pdf(voting_id):
     builder = VotingBuilder()
     repository = MySQLVotingRepository(builder)
     finder = VotingFinder(repository)
+    vote_repository = MongoVoteRepository()
+    vote_finder = VoteFinder(vote_repository)
     votacion = finder.find_voting_by_id(builder.build({"id": voting_id}))
+    votes = vote_finder.find_all_votes(votacion)
+    options = finder.find_options_by_voting_id(votacion)
+    if votacion.voting_system == "scoring":
+        winners, validos, blancos = scoring_with_direct_points(votes, options["options"])
+    elif votacion.voting_system == "mayority":
+        winners, validos, blancos = mayority_with_direct_points(votes,options["options"])
+    elif votacion.voting_system == "schuzle":
+        winners, validos, blancos = schulze_method(votes, options["options"])
+    print(winners)
+    print(type(winners))
+    for winner in winners:
+        print(winner)
+        print(type(winner))
     template_string = """<!DOCTYPE html>
                                     <html lang="es">
                                     <head>
@@ -90,7 +112,7 @@ def generate_votacion_pdf(voting_id):
                                             <div class="content">
                                                 <div class="info">
                                                     <p><strong>Nombre:</strong> {{ nombre }}</p>
-                                                    <p><strong>Tipo de Votación:</strong> {{ tipo_votacion }}</p>
+                                                    <p><strong>Número de Ganadores:</strong> {{ tipo_votacion }}</p>
                                                     <p><strong>Sistema de Votación:</strong> {{ sistema_votacion }}</p>
                                                     <p><strong>N° de Votos Emitidos:</strong> {{ votos_emitidos }}</p>
                                                     <p><strong>Votos Válidos:</strong> {{ votos_validos }}</p>
@@ -99,19 +121,9 @@ def generate_votacion_pdf(voting_id):
                                                 <div class="resultados">
                                                     <h2>RESULTADOS</h2>
                                                     <ul>
-                                                        {% for candidato in candidatos %}
+                                                        {% for nombre, valor in candidatos %}
                                                         <li>
-                                                            <strong>{{ candidato.nombre }}</strong> 
-                                                            <span class="stars">
-                                                                {% for i in range(candidato.estrellas) %}
-                                                                    ★
-                                                                {% endfor %}
-                                                            </span>
-                                                            <span class="stars-empty">
-                                                                {% for i in range(5 - candidato.estrellas) %}
-                                                                    ★
-                                                                {% endfor %}
-                                                            </span>
+                                                            <strong>{{ nombre }}</strong> - {{ valor }}
                                                         </li>
                                                         {% endfor %}
                                                     </ul>
@@ -127,10 +139,11 @@ def generate_votacion_pdf(voting_id):
                                         </div>
                                     </body>
                                     </html> """
-    context = {'nombre': votacion.name, 'tipo_votacion': votacion.winners, 'sistema_votacion': votacion.voting_system, 'fecha_inicio': votacion.start_date, 'fecha_fin': votacion.end_date, 'votacion_id': votacion.id }
+    context = {'nombre': votacion.name, 'tipo_votacion': votacion.winners, 'sistema_votacion': votacion.voting_system, 'votos_emitidos': validos+blancos, 'votos_validos': validos, 'votos_blanco': blancos, 'candidatos': winners,'fecha_inicio': votacion.start_date, 'fecha_fin': votacion.end_date, 'votacion_id': votacion.id }
     template = Template(template_string)
-    rendered_string = template.render(Context(context))
+    rendered_string = template.render(context)
     html = HTML(string=rendered_string)
-    with open(f'/home/jesus/TFG/{votacion.id}.pdf', 'wb') as f:
-        f.write(html)
+    output_path=f'{votacion.id}.pdf'
+    html.write_pdf(output_path)
+
     print(f'PDF generado para la votación {voting_id}')
