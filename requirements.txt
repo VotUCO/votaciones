@@ -1,5 +1,5 @@
 APScheduler==3.10.4
-celery==5.4.0
+Authlib==1.3.2
 Django==5.1
 Django_ddd==0.1.10
 django_environ==0.11.2
