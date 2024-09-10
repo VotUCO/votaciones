@@ -1,15 +1,6 @@
 # Dockerfile
 FROM python:3.10
 
-RUN apt-get update && \
-    apt-get install -y \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libcairo2 \
-    libffi-dev \
-    libgdk-pixbuf2.0-0 \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
 COPY requirements.txt /app/
