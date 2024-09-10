@@ -4,7 +4,7 @@ def mayority_with_direct_points(votes, candidates):
     validos = 0
     for vote in votes:
         if vote:
-            for candidate in vote.items():
+            for candidate in vote:
                 scores[candidate] += 1
                 validos = validos +1
         else:
