@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 from src.vote.domain.vote import Vote
 from src.vote.domain.vote_repository import VoteRepository
 from src.voting.domain.voting import Voting
@@ -26,3 +26,6 @@ class VoteFinder:
             return True
         else:
             return False
+
+    def find_all_votes(self, voting: Voting) -> List:
+        return self.__vote_repository.get_all_votes(voting)

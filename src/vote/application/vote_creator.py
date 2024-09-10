@@ -6,5 +6,5 @@ class VoteCreator:
     def __init__(self, vote_repository: VoteRepository):
         self.__vote_repository = vote_repository
 
-    def create(self, voting: Voting, vote: Vote) -> None:
+    def create(self, vote: Vote) -> None:
         self.__vote_repository.save(vote)

@@ -38,7 +38,7 @@ schema_view = get_schema_view(
 urlpatterns = [
     path("votuco/admin/", admin.site.urls),
     path("votuco/", schema_view.with_ui("swagger", cache_timeout=0), name="schema-swagger-ui"),
-    path("votuc/redocs/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    path("votuco/redocs/", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
     path(f"votuco/api/{VERSION}/voting/", include("src.voting.infrastructure.router")),
     path(f"votuco/api/{VERSION}/user/", include("src.users.infrastructure.router")),
     path(f"votuco/api/{VERSION}/vote/", include("src.vote.infrastructure.router")),
