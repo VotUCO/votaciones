@@ -17,8 +17,10 @@ class VoteBuilder(Builder):
     
     def build_from_record(self, record) -> Vote:
         return Vote(
-            id=record.id,
-            datetime=record.datetime,
-            voting_id=record.voting_id,
-            user_id=record.user_id
+            id=record.votetoken,
+            datetime=record.votedatetime,
+            voting_id=record.votingid,
+            user_id=record.userid,
+            vote=None,
+            voted=None,
         )
